@@ -13,6 +13,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Microsoft.OpenApi.Models;
 using NSE.Identidade.API.Data;
 
 namespace NSE.Identidade.API
@@ -38,11 +39,28 @@ namespace NSE.Identidade.API
                 .AddDefaultTokenProviders(); //criptografia no link para reconhecimento
 
             services.AddControllers();
+
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new OpenApiInfo
+                {
+                    Title = "NerdStore Enterprise Identity API",
+                    Description = "Esta API faz parte do curso ASP.NET Core Enterprise Application",
+                    Contact = new OpenApiContact() { Name = "Eduardo Pires", Email = "contato@desenvolvedor.io" },
+                    License = new OpenApiLicense() { Name = "MIT", Url = new Uri("http://opensource.org/license/MIT") }
+                });
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            app.UseSwagger();
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "v1");
+            });
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
